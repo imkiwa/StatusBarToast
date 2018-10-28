@@ -1,0 +1,60 @@
+package com.imkiva.statusbar.toast;
+
+import android.app.Activity;
+import android.support.annotation.ColorRes;
+import android.support.annotation.StringRes;
+import android.support.v4.content.ContextCompat;
+
+/**
+ * @author kiva
+ */
+public class StatusBarToast {
+    public static final long DURATION_SHORT = 1000;
+    public static final long DURATION_LONG = 3000;
+
+    public static class Builder {
+        private final StatusBarView statusBarView;
+        private final Activity activity;
+
+        public Builder(Activity activity) {
+            this.activity = activity;
+            this.statusBarView = new StatusBarView(activity);
+        }
+
+        public Builder setText(CharSequence text) {
+            statusBarView.setText(text);
+            return this;
+        }
+
+        public Builder setText(@StringRes int res) {
+            return setText(activity.getText(res));
+        }
+
+        public Builder setBackgroundColor(int color) {
+            statusBarView.setBackgroundColor(color);
+            return this;
+        }
+
+        public Builder setBackgroundColorResource(@ColorRes int res) {
+            return setBackgroundColor(ContextCompat.getColor(activity, res));
+        }
+
+        public Builder setDuration(long duration) {
+            statusBarView.setDuration(duration);
+            return this;
+        }
+
+        public Builder setShowProgressBar(boolean showProgressBar) {
+            statusBarView.setShowProgressBar(showProgressBar);
+            return this;
+        }
+
+        public void show() {
+            statusBarView.show();
+        }
+
+        public StatusBarView build() {
+            return statusBarView;
+        }
+    }
+}
