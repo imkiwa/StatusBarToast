@@ -9,8 +9,23 @@ import android.support.v4.content.ContextCompat;
  * @author kiva
  */
 public class StatusBarToast {
+    public static final long DURATION_UNLIMITED = 0;
     public static final long DURATION_SHORT = 1000;
     public static final long DURATION_LONG = 3000;
+
+    private final StatusBarView statusBarView;
+
+    private StatusBarToast(StatusBarView statusBarView) {
+        this.statusBarView = statusBarView;
+    }
+
+    public void dismiss() {
+        statusBarView.dismiss();
+    }
+
+    public void show() {
+        statusBarView.show();
+    }
 
     public static class Builder {
         private final StatusBarView statusBarView;
@@ -53,8 +68,8 @@ public class StatusBarToast {
             statusBarView.show();
         }
 
-        public StatusBarView build() {
-            return statusBarView;
+        public StatusBarToast build() {
+            return new StatusBarToast(statusBarView);
         }
     }
 }

@@ -23,7 +23,7 @@ import android.widget.TextView;
 /**
  * @author kiva
  */
-public final class StatusBarView {
+final class StatusBarView {
     private static final float DEFAULT_TEXT_SIZE = 11f;
     private static final float DEFAULT_STATUS_BAR_HEIGHT = 25f;
     private static final long START_DELAY_SHOW = 350;
@@ -46,15 +46,15 @@ public final class StatusBarView {
         this.statusBarHeight = getStatusBarHeight(activity);
     }
 
-    public void setBackgroundColor(int color) {
+    void setBackgroundColor(int color) {
         this.backgroundColor = color;
     }
 
-    public void setShowProgressBar(boolean showProgressBar) {
+    void setShowProgressBar(boolean showProgressBar) {
         this.showProgressBar = showProgressBar;
     }
 
-    public void setDuration(long duration) {
+    void setDuration(long duration) {
         this.duration = duration;
     }
 
@@ -62,7 +62,11 @@ public final class StatusBarView {
         this.text = text;
     }
 
-    public void show() {
+    void show() {
+        if (viewContainer != null) {
+            return;
+        }
+
         this.viewContainer = makeViewContainer();
         viewContainer.textView.setText(text);
         viewContainer.progressBar.setVisibility(showProgressBar ? View.VISIBLE : View.GONE);
@@ -73,6 +77,8 @@ public final class StatusBarView {
         backupStatusBar(window);
 
         decorView.addView(viewContainer);
+
+        viewContainer.layout.setTranslationY(-statusBarHeight);
         viewContainer.layout.animate()
                 .translationY(0f)
                 .setDuration(ANIMATION_DURATION)
@@ -80,10 +86,12 @@ public final class StatusBarView {
                 .setInterpolator(new AccelerateDecelerateInterpolator())
                 .start();
 
-        viewContainer.postDelayed(this::dismiss, duration);
+        if (duration > 0) {
+            viewContainer.postDelayed(this::dismiss, duration + 500);
+        }
     }
 
-    public void dismiss() {
+    void dismiss() {
         if (viewContainer == null || viewContainer.getParent() == null) {
             return;
         }
@@ -103,6 +111,7 @@ public final class StatusBarView {
                     public void onAnimationEnd(Animator animation) {
                         super.onAnimationEnd(animation);
                         decorView.removeView(viewContainer);
+                        viewContainer = null;
                     }
                 })
                 .start();
@@ -113,7 +122,7 @@ public final class StatusBarView {
 
         rootView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
         rootView.setOnSystemUiVisibilityChangeListener(l ->
-                rootView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE));
+                viewContainer.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE));
 
         translucent = isTranslucentStatusBar(activity);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -140,8 +149,7 @@ public final class StatusBarView {
         viewContainer.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 statusBarHeight));
 
-        viewContainer.initLayout(activity);
-        viewContainer.layout.setTranslationY(-statusBarHeight);
+        viewContainer.initLayout(activity, statusBarHeight);
         return viewContainer;
     }
 
@@ -184,18 +192,18 @@ public final class StatusBarView {
             super.onDetachedFromWindow();
         }
 
-        void initLayout(Context context) {
+        void initLayout(Context context, int statusBarHeight) {
             final float textSize = DEFAULT_TEXT_SIZE;
 
             layout = new LinearLayout(context);
             layout.setOrientation(LinearLayout.HORIZONTAL);
             layout.setGravity(Gravity.CENTER_VERTICAL);
             layout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                    getHeight()));
+                    statusBarHeight));
 
             textView = new TextView(context);
             textView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                    getHeight()));
+                    statusBarHeight));
             textView.setTextSize(textSize);
             textView.setTextColor(Color.WHITE);
             textView.setGravity(Gravity.CENTER);
@@ -207,8 +215,12 @@ public final class StatusBarView {
             progressBar.getIndeterminateDrawable().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
             progressBar.setLayoutParams(new ViewGroup.LayoutParams(pixel, pixel));
 
-            layout.addView(textView);
+            View delimiter = new View(context);
+            delimiter.setLayoutParams(new ViewGroup.LayoutParams(statusBarHeight / 6, statusBarHeight));
+
             layout.addView(progressBar);
+            layout.addView(delimiter);
+            layout.addView(textView);
             addView(layout);
         }
     }
