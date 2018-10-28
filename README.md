@@ -15,7 +15,8 @@ StatusBarToast toast = new StatusBarToast.Builder(this)
         .setText("Connecting")
         .setShowProgressBar(true)
         .setDuration(StatusBarToast.DURATION_UNLIMITED)
-        .setBackgroundColorResource(R.color.colorPrimaryDark);
+        .setBackgroundColorResource(R.color.colorPrimaryDark)
+        .build();
 toast.show();
 
 // somewhere else
