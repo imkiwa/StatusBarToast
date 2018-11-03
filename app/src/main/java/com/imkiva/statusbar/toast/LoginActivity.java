@@ -132,7 +132,14 @@ public class LoginActivity extends AppCompatActivity {
                     .build();
             statusBarToast.show();
         } else {
-            statusBarToast.dismiss();
+            try {
+                statusBarToast.setProgressBar(false);
+                statusBarToast.updateText("Welcome Back");
+                Thread.sleep(1000);
+            } catch (InterruptedException ignore) {
+            } finally {
+                statusBarToast.dismiss();
+            }
         }
     }
 
@@ -158,6 +165,10 @@ public class LoginActivity extends AppCompatActivity {
             try {
                 // Simulate network access.
                 Thread.sleep(2000);
+                statusBarToast.updateText("Verifying");
+                Thread.sleep(2000);
+                statusBarToast.updateText("Updating");
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 return false;
             }

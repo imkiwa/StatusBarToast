@@ -51,6 +51,11 @@ final class StatusBarView {
     }
 
     void setShowProgressBar(boolean showProgressBar) {
+        if (isShowing()) {
+            viewContainer.post(() ->
+                    viewContainer.progressBar.setVisibility(showProgressBar ? View.VISIBLE : View.INVISIBLE));
+            return;
+        }
         this.showProgressBar = showProgressBar;
     }
 
@@ -59,17 +64,21 @@ final class StatusBarView {
     }
 
     public void setText(CharSequence text) {
+        if (isShowing()) {
+            viewContainer.post(() -> viewContainer.textView.setText(text));
+            return;
+        }
         this.text = text;
     }
 
     void show() {
-        if (viewContainer != null) {
+        if (isShowing()) {
             return;
         }
 
         this.viewContainer = makeViewContainer();
         viewContainer.textView.setText(text);
-        viewContainer.progressBar.setVisibility(showProgressBar ? View.VISIBLE : View.GONE);
+        viewContainer.progressBar.setVisibility(showProgressBar ? View.VISIBLE : View.INVISIBLE);
 
         final Window window = activity.getWindow();
         final ViewGroup decorView = ((ViewGroup) window.getDecorView());
@@ -92,29 +101,31 @@ final class StatusBarView {
     }
 
     void dismiss() {
-        if (viewContainer == null || viewContainer.getParent() == null) {
-            return;
+        if (isShowing()) {
+            final Window window = activity.getWindow();
+            final ViewGroup decorView = ((ViewGroup) window.getDecorView());
+
+            restoreStatusBar(window);
+
+            viewContainer.layout.animate()
+                    .translationY(-statusBarHeight)
+                    .setDuration(ANIMATION_DURATION)
+                    .setStartDelay(START_DELAY_DISMISS)
+                    .setInterpolator(new AccelerateInterpolator())
+                    .setListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            super.onAnimationEnd(animation);
+                            decorView.removeView(viewContainer);
+                            viewContainer = null;
+                        }
+                    })
+                    .start();
         }
+    }
 
-        final Window window = activity.getWindow();
-        final ViewGroup decorView = ((ViewGroup) window.getDecorView());
-
-        restoreStatusBar(window);
-
-        viewContainer.layout.animate()
-                .translationY(-statusBarHeight)
-                .setDuration(ANIMATION_DURATION)
-                .setStartDelay(START_DELAY_DISMISS)
-                .setInterpolator(new AccelerateInterpolator())
-                .setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        super.onAnimationEnd(animation);
-                        decorView.removeView(viewContainer);
-                        viewContainer = null;
-                    }
-                })
-                .start();
+    boolean isShowing() {
+        return viewContainer != null && viewContainer.getParent() != null;
     }
 
     private void backupStatusBar(Window window) {

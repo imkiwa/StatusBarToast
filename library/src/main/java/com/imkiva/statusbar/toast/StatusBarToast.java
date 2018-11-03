@@ -27,6 +27,14 @@ public class StatusBarToast {
         statusBarView.show();
     }
 
+    public void updateText(CharSequence text) {
+        statusBarView.setText(text);
+    }
+
+    public void setProgressBar(boolean show) {
+        statusBarView.setShowProgressBar(show);
+    }
+
     public static class Builder {
         private final StatusBarView statusBarView;
         private final Activity activity;
