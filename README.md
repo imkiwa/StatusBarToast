@@ -21,6 +21,7 @@ Displaying text on your StatusBar!(Telegram-X like)
 ```groovy
 compile 'com.imkiva.statusbar.toast:library:1.0-1'
 ```
+
 * Unlimited Duration Toast:
 ```java
 // create a toast and show it
