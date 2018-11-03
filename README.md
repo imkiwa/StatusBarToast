@@ -4,6 +4,12 @@ StatusBarToast
 Displaying text on your StatusBar!(Telegram-X like)
 
 
+## Features
+* Display Progress Bar
+* Change Text Dynamically
+* Toggle Progress Bar States
+
+
 ![demo](demo/demo.gif)
 
 
