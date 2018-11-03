@@ -1,5 +1,8 @@
 StatusBarToast
 ==============
+[![GitHub top language](https://img.shields.io/github/languages/top/imkiva/StatusBarToast.svg)](https://github.com/imkiva/StatusBarToast)
+[![license](https://img.shields.io/github/license/imkiva/StatusBarToast.svg?colorB=000000)](https://github.com/imkiva/StatusBarToast)
+[![Download](https://api.bintray.com/packages/imkiva/maven/statusbar-toast/images/download.svg) ](https://bintray.com/imkiva/maven/statusbar-toast/_latestVersion)
 
 Displaying text on your StatusBar!(Telegram-X like)
 
@@ -14,6 +17,10 @@ Displaying text on your StatusBar!(Telegram-X like)
 
 
 ## Usage
+* Add following code to your `build.gradle`:
+```groovy
+compile 'com.imkiva.statusbar.toast:library:1.0-1'
+```
 * Unlimited Duration Toast:
 ```java
 // create a toast and show it
